@@ -1,0 +1,29 @@
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">ES</div>
+    <div class="brand-text">
+      <div class="brand-title">Enterprise Learning Platform</div>
+      <div class="brand-sub">Skill &amp; Career Guidance</div>
+    </div>
+  </div>
+
+  <div class="milestone-tag">Milestone 4 · Career &amp; Analytics</div>
+
+  <nav class="nav">
+    @for (item of navItems; track item.path) {
+      <a
+        class="nav-item"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: !!item.exact }">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-title">Platform</div>
+    <div class="sidebar-footer-text">Angular 20 · Reactive state · localStorage</div>
+  </div>
+</aside>

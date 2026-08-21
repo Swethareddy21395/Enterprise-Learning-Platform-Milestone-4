@@ -1,0 +1,189 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Career Planning &amp; Overview</h1>
+      <div class="page-subtitle">Milestone 4 &middot; Career Service &middot; live employee career profile</div>
+    </div>
+  </div>
+
+  <div class="grid grid-kpi">
+    <div class="kpi-card">
+      <span class="kpi-label">Active Career Plans</span>
+      <span class="kpi-value">{{ kpis.careerPlans }}</span>
+      <span class="kpi-foot">Organization-wide</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Annual Promotions</span>
+      <span class="kpi-value">{{ kpis.promotions }}</span>
+      <span class="kpi-foot">Trailing 12 months</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Skill Coverage</span>
+      <span class="kpi-value">{{ kpis.skillCoverage }}</span>
+      <span class="kpi-foot">Department average</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Job Matches</span>
+      <span class="kpi-value">{{ jobMatchCount$ | async }}</span>
+      <span class="kpi-foot">50%+ skill match for you</span>
+    </div>
+  </div>
+
+  @if (careerPlan$ | async; as plan) {
+    <div class="grid grid-2 mt-24">
+      <div class="card">
+        <div class="card-title">
+          Employee Career Profile
+          <span class="badge badge-info">{{ plan.employeeId }}</span>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-avatar">{{ plan.employeeName.charAt(0) }}</div>
+          <div>
+            <div class="profile-name">{{ plan.employeeName }}</div>
+            <div class="text-muted text-sm">{{ plan.currentRole }} &rarr; {{ plan.targetRole }}</div>
+          </div>
+        </div>
+
+        <div class="profile-grid mt-16">
+          <div><span class="text-muted text-sm">Career Goal</span><div>{{ plan.careerGoal }}</div></div>
+          <div><span class="text-muted text-sm">Mentor</span><div>{{ plan.mentor }}</div></div>
+          <div><span class="text-muted text-sm">Target Date</span><div>{{ plan.targetDate }}</div></div>
+          <div><span class="text-muted text-sm">Development Priority</span><div>{{ plan.developmentPriority }}</div></div>
+        </div>
+
+        <div class="mt-16">
+          <div class="flex-between">
+            <span class="text-sm text-muted">Progress toward {{ plan.targetRole }}</span>
+            <span class="text-sm" style="font-weight:700">{{ plan.progress }}%</span>
+          </div>
+          <div class="progress-track mt-8">
+            <div class="progress-fill" [style.width.%]="plan.progress"></div>
+          </div>
+        </div>
+
+        <div class="mt-16">
+          <div class="flex-between">
+            <span class="text-sm text-muted">Promotion readiness</span>
+            <span class="text-sm" style="font-weight:700">{{ promotionReadiness$ | async }}%</span>
+          </div>
+          <div class="progress-track mt-8">
+            <div class="progress-fill success" [style.width.%]="promotionReadiness$ | async"></div>
+          </div>
+        </div>
+
+        @if (plan.notes) {
+          <p class="text-muted text-sm mt-16">{{ plan.notes }}</p>
+        }
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Skill Gap Analysis
+          <span class="hint">vs {{ plan.targetRole }} requirements</span>
+        </div>
+        @for (gap of (skillGaps$ | async); track gap.skill) {
+          <div class="skill-gap-row">
+            <div class="flex-between">
+              <span class="text-sm" style="font-weight:600">{{ gap.skill }}</span>
+              <span class="text-sm text-muted">{{ gap.current }} / {{ gap.required }}
+                @if (gap.required > gap.current) {
+                  <span class="chip gap" style="margin-left:6px">+{{ gap.required - gap.current }} gap</span>
+                } @else {
+                  <span class="chip" style="margin-left:6px">Met</span>
+                }
+              </span>
+            </div>
+            <div class="progress-track mt-8">
+              <div
+                class="progress-fill"
+                [ngClass]="skillBarClass(gap.current, gap.required)"
+                [style.width.%]="(gap.current / gap.required) * 100">
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <p class="text-muted text-sm">No skill requirements defined for this target role yet.</p>
+        }
+        <a class="btn btn-secondary btn-sm mt-16" routerLink="/career/training-analytics">View Training</a>
+      </div>
+    </div>
+  }
+
+  <div class="card mt-24">
+    <div class="card-title">Update Career Plan</div>
+    <form [formGroup]="form" (ngSubmit)="saveCareerPlan()" class="form-grid">
+      <div class="form-field" [class.invalid]="f['currentRole'].invalid && f['currentRole'].touched">
+        <label for="currentRole">Current Role</label>
+        <select id="currentRole" formControlName="currentRole">
+          @for (role of roleLadder; track role) {
+            <option [value]="role">{{ role }}</option>
+          }
+        </select>
+        @if (f['currentRole'].invalid && f['currentRole'].touched) {
+          <span class="error-text">Current role is required.</span>
+        }
+      </div>
+
+      <div class="form-field" [class.invalid]="f['targetRole'].invalid && f['targetRole'].touched">
+        <label for="targetRole">Target Role</label>
+        <select id="targetRole" formControlName="targetRole">
+          @for (role of roleLadder; track role) {
+            <option [value]="role">{{ role }}</option>
+          }
+        </select>
+        @if (f['targetRole'].hasError('required') && f['targetRole'].touched) {
+          <span class="error-text">Target role is required.</span>
+        }
+        @if (f['targetRole'].hasError('belowCurrentRole') && f['targetRole'].touched) {
+          <span class="error-text">Target role must be at or above the current role.</span>
+        }
+      </div>
+
+      <div class="form-field" [class.invalid]="f['mentor'].invalid && f['mentor'].touched">
+        <label for="mentor">Mentor</label>
+        <input id="mentor" type="text" formControlName="mentor" placeholder="e.g. Jane Doe" />
+        @if (f['mentor'].invalid && f['mentor'].touched) {
+          <span class="error-text">Mentor is required.</span>
+        }
+      </div>
+
+      <div class="form-field" [class.invalid]="f['targetDate'].invalid && f['targetDate'].touched">
+        <label for="targetDate">Target Date</label>
+        <input id="targetDate" type="date" formControlName="targetDate" />
+        @if (f['targetDate'].invalid && f['targetDate'].touched) {
+          <span class="error-text">Target date is required.</span>
+        }
+      </div>
+
+      <div class="form-field" [class.invalid]="f['developmentPriority'].invalid && f['developmentPriority'].touched">
+        <label for="developmentPriority">Development Priority</label>
+        <input id="developmentPriority" type="text" formControlName="developmentPriority" placeholder="e.g. Angular & Leadership" />
+        @if (f['developmentPriority'].invalid && f['developmentPriority'].touched) {
+          <span class="error-text">Development priority is required.</span>
+        }
+      </div>
+
+      <div class="form-field full" [class.invalid]="f['careerGoal'].invalid && f['careerGoal'].touched">
+        <label for="careerGoal">Career Goal</label>
+        <textarea id="careerGoal" formControlName="careerGoal" rows="2"></textarea>
+        @if (f['careerGoal'].hasError('required') && f['careerGoal'].touched) {
+          <span class="error-text">Career goal is required.</span>
+        }
+        @if (f['careerGoal'].hasError('minlength') && f['careerGoal'].touched) {
+          <span class="error-text">Please provide at least 10 characters.</span>
+        }
+      </div>
+
+      <div class="form-field full">
+        <label for="notes">Notes</label>
+        <textarea id="notes" formControlName="notes" rows="2"></textarea>
+      </div>
+
+      <div class="form-actions full">
+        <button type="submit" class="btn btn-primary" [disabled]="form.pristine && form.valid">Save Changes</button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">Discard Changes</button>
+      </div>
+    </form>
+  </div>
+</div>

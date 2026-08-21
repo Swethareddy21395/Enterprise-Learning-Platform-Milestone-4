@@ -1,0 +1,64 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Promotion Criteria</h1>
+      <div class="page-subtitle">Requirements and readiness for your next promotion</div>
+    </div>
+  </div>
+
+  @if (careerPlan$ | async; as plan) {
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">{{ plan.currentRole }} &rarr; {{ plan.targetRole }}</div>
+        <div class="flex-between">
+          <span class="text-muted text-sm">Promotion Readiness</span>
+          <span style="font-weight:800; font-size:1.3rem">{{ readiness$ | async }}%</span>
+        </div>
+        <div class="progress-track mt-8">
+          <div class="progress-fill success" [style.width.%]="readiness$ | async"></div>
+        </div>
+        <p class="text-muted text-sm mt-16">
+          Eligibility: <strong>{{ eligibilityLabel((readiness$ | async) ?? 0) }}</strong>
+        </p>
+        <p class="text-muted text-sm">Click any criterion to mark it complete or pending - readiness recalculates instantly and is saved.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Criteria Checklist</div>
+        @for (c of (criteria$ | async); track c.id) {
+          <button type="button" class="criterion-row" (click)="toggle(c.id, c.name, c.completed)">
+            <span class="criterion-mark" [ngClass]="{ done: c.completed }">
+              {{ c.completed ? '✓' : '○' }}
+            </span>
+            <span [ngClass]="{ 'criterion-done-text': c.completed }">{{ c.name }}</span>
+          </button>
+        } @empty {
+          <p class="text-muted text-sm">No promotion criteria defined for this target role.</p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-2 mt-24">
+      <div class="card">
+        <div class="card-title">Completed</div>
+        <ul class="status-list">
+          @for (c of (criteria$ | async); track c.id) {
+            @if (c.completed) {
+              <li class="completed">✓ {{ c.name }}</li>
+            }
+          }
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Pending</div>
+        <ul class="status-list">
+          @for (c of (criteria$ | async); track c.id) {
+            @if (!c.completed) {
+              <li class="pending">○ {{ c.name }}</li>
+            }
+          }
+        </ul>
+      </div>
+    </div>
+  }
+</div>

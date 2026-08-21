@@ -1,0 +1,6 @@
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 12px 16px;
+}
+.requirement-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }

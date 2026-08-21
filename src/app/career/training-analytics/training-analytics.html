@@ -1,0 +1,80 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Training Analytics</h1>
+      <div class="page-subtitle">Program effectiveness, completion, and skill improvement across the organization</div>
+    </div>
+  </div>
+
+  @if (completion$ | async; as completion) {
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Completion</div>
+        <div class="donut-wrap">
+          <div class="donut" [style.background]="donutStyle(completion.completed, completion.inProgress)">
+            <div class="donut-center">
+              <div class="donut-value">{{ completion.completed }}%</div>
+              <div class="text-muted text-sm">Completed</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-row"><span class="dot-legend" style="background:var(--color-success)"></span>Completed — {{ completion.completed }}%</div>
+            <div class="legend-row"><span class="dot-legend" style="background:var(--color-warning)"></span>In Progress — {{ completion.inProgress }}%</div>
+            <div class="legend-row"><span class="dot-legend" style="background:var(--color-border)"></span>Not Started — {{ completion.notStarted }}%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Skill Improvement (before &rarr; after training)</div>
+        @for (s of (skillImprovement$ | async); track s.skill) {
+          <div class="skill-improve-row">
+            <div class="flex-between">
+              <span class="text-sm" style="font-weight:600">{{ s.skill }}</span>
+              <span class="text-sm text-muted">{{ s.before }}% &rarr; {{ s.after }}%</span>
+            </div>
+            <div class="progress-track mt-8" style="position:relative;">
+              <div class="progress-fill" style="opacity:0.35" [style.width.%]="s.before"></div>
+            </div>
+            <div class="progress-track" style="margin-top:-10px;">
+              <div class="progress-fill success" [style.width.%]="s.after"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="card mt-24">
+    <div class="card-title">Training Effectiveness by Program</div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Training Program</th>
+            <th>Employees Trained</th>
+            <th>Avg. Assessment Score</th>
+            <th>Effectiveness</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of (programs$ | async); track p.name) {
+            <tr>
+              <td style="font-weight:600">{{ p.name }}</td>
+              <td>{{ p.employeesTrained | number }}</td>
+              <td>{{ p.avgAssessmentScore }}%</td>
+              <td>
+                <div class="progress-row" style="margin:0;">
+                  <div class="progress-track">
+                    <div class="progress-fill" [ngClass]="effectivenessClass(p.effectiveness)" [style.width.%]="p.effectiveness"></div>
+                  </div>
+                  <span class="progress-pct">{{ p.effectiveness }}%</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

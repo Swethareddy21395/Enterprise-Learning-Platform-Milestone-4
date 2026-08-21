@@ -1,0 +1,96 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Internal Job Opportunities</h1>
+      <div class="page-subtitle">{{ (allJobs$ | async)?.length }} Job Matches based on your current skill profile</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <form [formGroup]="filterForm" class="filters-grid">
+      <div class="form-field">
+        <label for="search">Search</label>
+        <input id="search" type="text" formControlName="search" placeholder="Search by title or skill, e.g. Java" />
+      </div>
+      <div class="form-field">
+        <label for="department">Department</label>
+        <select id="department" formControlName="department">
+          <option value="">All Departments</option>
+          @for (d of departmentOptions; track d) { <option [value]="d">{{ d }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="location">Location</label>
+        <select id="location" formControlName="location">
+          <option value="">All Locations</option>
+          @for (l of locationOptions; track l) { <option [value]="l">{{ l }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="experience">Experience</label>
+        <select id="experience" formControlName="experience">
+          <option value="">Any Experience</option>
+          @for (e of experienceOptions; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="skill">Skill</label>
+        <select id="skill" formControlName="skill">
+          <option value="">Any Skill</option>
+          @for (s of skillOptions; track s) { <option [value]="s">{{ s }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="jobType">Job Type</label>
+        <select id="jobType" formControlName="jobType">
+          <option value="">Any Type</option>
+          @for (t of jobTypeOptions; track t) { <option [value]="t">{{ t }}</option> }
+        </select>
+      </div>
+      <div class="form-field filter-clear-wrap">
+        <label>&nbsp;</label>
+        <button type="button" class="btn btn-secondary btn-block" (click)="clearFilters()">Clear Filters</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-24">
+    @if ((filteredJobs$ | async)?.length) {
+      <div class="grid grid-2">
+        @for (job of (filteredJobs$ | async); track job.id) {
+          <div class="card job-card">
+            <div class="card-title">
+              {{ job.title }}
+              <span class="badge" [ngClass]="matchClass(job.matchPercent)">{{ job.matchPercent }}% match</span>
+            </div>
+            <div class="job-meta text-sm text-muted">
+              {{ job.department }} &middot; {{ job.location }} &middot; {{ job.experience }} &middot; {{ job.jobType }}
+            </div>
+            <div class="chip-list mt-8">
+              @for (s of job.requiredSkills; track s) { <span class="chip">{{ s }}</span> }
+            </div>
+            <div class="text-muted text-sm mt-8">Posted {{ job.postedDate }}</div>
+
+            <div class="job-actions mt-16">
+              <a class="btn btn-secondary btn-sm" [routerLink]="['/career/jobs', job.id]">View Details</a>
+              <button type="button" class="btn btn-sm" [ngClass]="isSaved(job.id) ? 'btn-primary' : 'btn-secondary'" (click)="toggleSave(job.id, job.title)">
+                {{ isSaved(job.id) ? '🔖 Saved' : '🔖 Save Job' }}
+              </button>
+              @if (isApplied(job.id)) {
+                <span class="btn btn-sm" style="background:var(--color-success-bg); color:var(--color-success); pointer-events:none;">✓ Applied</span>
+              } @else {
+                <button type="button" class="btn btn-primary btn-sm" (click)="apply(job.id, job.title)">Apply</button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="card empty-state">
+        <div class="icon">🔍</div>
+        <div>No jobs match your current filters.</div>
+        <button type="button" class="btn btn-secondary btn-sm mt-16" (click)="clearFilters()">Clear Filters</button>
+      </div>
+    }
+  </div>
+</div>

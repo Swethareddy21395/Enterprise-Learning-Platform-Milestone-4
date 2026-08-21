@@ -1,0 +1,12 @@
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.filter-clear-wrap { justify-content: flex-end; }
+
+.job-card { display: flex; flex-direction: column; }
+.job-meta { margin-top: 2px; }
+.job-actions { display: flex; gap: 8px; flex-wrap: wrap; }

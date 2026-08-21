@@ -1,0 +1,103 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Career Roadmaps</h1>
+      <div class="page-subtitle">Career ladder progression, requirements per stage, and current position</div>
+    </div>
+  </div>
+
+  @if (careerPlan$ | async; as plan) {
+    <div class="card">
+      <div class="card-title">
+        {{ plan.currentRole }} &rarr; {{ plan.targetRole }}
+        <span class="hint">{{ plan.progress }}% complete</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="plan.progress"></div>
+      </div>
+      <p class="text-muted text-sm mt-8">
+        Changing the target role on Career Overview automatically rebuilds this roadmap - it's driven
+        entirely by shared state, not hardcoded per page.
+      </p>
+    </div>
+
+    <div class="roadmap mt-24">
+      @for (stage of (roadmap$ | async); track stage.role; let last = $last) {
+        <div class="roadmap-stage" [ngClass]="stage.status">
+          <div class="stage-marker">
+            @if (stage.status === 'completed') {
+              <span>✓</span>
+            } @else if (stage.status === 'current') {
+              <span>●</span>
+            } @else {
+              <span>○</span>
+            }
+          </div>
+
+          <div class="stage-card card">
+            <div class="card-title">
+              {{ stage.role }}
+              <span
+                class="badge"
+                [ngClass]="{
+                  'badge-success': stage.status === 'completed',
+                  'badge-info': stage.status === 'current',
+                  'badge-neutral': stage.status === 'upcoming'
+                }">
+                {{ stage.status === 'current' ? 'Current Stage' : stage.status }}
+              </span>
+            </div>
+
+            <div class="stage-grid">
+              <div>
+                <div class="text-muted text-sm">Required Skills</div>
+                <div class="chip-list mt-8">
+                  @for (s of stage.requiredSkills; track s) {
+                    <span class="chip">{{ s }}</span>
+                  }
+                </div>
+              </div>
+              <div>
+                <div class="text-muted text-sm">Required Certifications</div>
+                <div class="chip-list mt-8">
+                  @for (c of stage.requiredCertifications; track c) {
+                    <span class="chip">{{ c }}</span>
+                  } @empty {
+                    <span class="text-muted text-sm">None required</span>
+                  }
+                </div>
+              </div>
+              <div>
+                <div class="text-muted text-sm">Required Training</div>
+                <div class="chip-list mt-8">
+                  @for (t of stage.requiredTraining; track t) {
+                    <span class="chip">{{ t }}</span>
+                  }
+                </div>
+              </div>
+              <div>
+                <div class="text-muted text-sm">Experience Requirement</div>
+                <div class="mt-8" style="font-weight:600">{{ stage.experienceRequirement }}</div>
+              </div>
+            </div>
+
+            <div class="mt-16">
+              <div class="text-muted text-sm">Promotion Requirements</div>
+              <ul class="requirement-list mt-8">
+                @for (req of stage.promotionRequirements; track req) {
+                  <li>{{ req }}</li>
+                }
+              </ul>
+            </div>
+
+            @if (stage.role === plan.targetRole) {
+              <a class="btn btn-secondary btn-sm mt-16" routerLink="/career/promotion-criteria">
+                View Promotion Criteria
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

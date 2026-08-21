@@ -1,0 +1,54 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Saved Jobs</h1>
+      <div class="page-subtitle">Jobs you have bookmarked for later - persisted across sessions</div>
+    </div>
+  </div>
+
+  @if ((savedJobs$ | async)?.length) {
+    <div class="table-wrap card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Job Title</th>
+            <th>Department</th>
+            <th>Location</th>
+            <th>Match</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (job of (savedJobs$ | async); track job.id) {
+            <tr>
+              <td><a [routerLink]="['/career/jobs', job.id]">{{ job.title }}</a></td>
+              <td>{{ job.department }}</td>
+              <td>{{ job.location }}</td>
+              <td><span class="badge badge-info">{{ job.matchPercent }}%</span></td>
+              <td>
+                @if (isApplied(job.id)) {
+                  <span class="badge badge-success">Applied</span>
+                } @else {
+                  <span class="badge badge-neutral">Not applied</span>
+                }
+              </td>
+              <td class="row-actions">
+                @if (!isApplied(job.id)) {
+                  <button type="button" class="btn btn-primary btn-sm" (click)="apply(job.id, job.title)">Apply</button>
+                }
+                <button type="button" class="btn btn-secondary btn-sm" (click)="remove(job.id, job.title)">Remove</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="card empty-state">
+      <div class="icon">🔖</div>
+      <div>You haven't saved any jobs yet.</div>
+      <a class="btn btn-secondary btn-sm mt-16" routerLink="/career/jobs">Browse Internal Jobs</a>
+    </div>
+  }
+</div>

@@ -1,0 +1,72 @@
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.roadmap-stage {
+  display: flex;
+  gap: 16px;
+  position: relative;
+}
+
+.stage-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 30px;
+  min-width: 30px;
+}
+
+.stage-marker span {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  background: #eceefc;
+  color: var(--color-muted);
+}
+
+.roadmap-stage.completed .stage-marker span { background: var(--color-success); color: #fff; }
+.roadmap-stage.current .stage-marker span {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: #fff;
+  box-shadow: 0 0 0 5px rgba(91, 75, 245, 0.16);
+}
+
+.roadmap-stage:not(:last-child) .stage-marker::after {
+  content: '';
+  flex: 1;
+  width: 2px;
+  background: var(--color-border);
+  margin-top: 2px;
+}
+
+.stage-card {
+  flex: 1;
+  margin-bottom: 22px;
+}
+
+.roadmap-stage.current .stage-card {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(91, 75, 245, 0.12), var(--shadow-card);
+}
+
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.requirement-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.86rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

@@ -1,0 +1,47 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <h1 class="app-title">Enterprise Learning Platform with Skill and Career Guidance System</h1>
+    <span class="app-subtitle">Milestone 4 &middot; Career &amp; Analytics</span>
+  </div>
+
+  <div class="topbar-right">
+    <div class="icon-btn-wrap">
+      <button class="icon-btn" (click)="toggleNotifications()" aria-label="Notifications">
+        🔔
+        @if ((history$ | async)?.length) {
+          <span class="dot"></span>
+        }
+      </button>
+      @if (notificationsOpen) {
+        <div class="dropdown notifications-dropdown">
+          <div class="dropdown-title">Recent Notifications</div>
+          @if ((history$ | async)?.length) {
+            <ul class="notif-list">
+              @for (n of (history$ | async); track n.id) {
+                <li class="notif-item" [ngClass]="'notif-' + n.type">{{ n.message }}</li>
+              }
+            </ul>
+          } @else {
+            <div class="dropdown-empty">No notifications yet.</div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="icon-btn-wrap">
+      <button class="icon-btn" (click)="toggleProfileMenu()" aria-label="Settings and profile">
+        <span class="avatar">JS</span>
+        <span class="profile-name">{{ (employeeName$ | async)?.employeeName }}</span>
+        <span class="caret">▾</span>
+      </button>
+      @if (profileMenuOpen) {
+        <div class="dropdown profile-dropdown">
+          <div class="dropdown-title">{{ (employeeName$ | async)?.employeeName }}</div>
+          <div class="dropdown-sub">{{ (employeeName$ | async)?.currentRole }} &middot; HR Manager view</div>
+          <button class="dropdown-action" (click)="onResetDemoData()">⚙️ Reset Demo Data</button>
+          <button class="dropdown-action danger" (click)="onLogout()">↪ Logout</button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

@@ -1,0 +1,41 @@
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.donut {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.donut-center {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-value { font-size: 1.4rem; font-weight: 800; }
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.86rem;
+}
+
+.legend-row { display: flex; align-items: center; gap: 8px; }
+.dot-legend { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+.skill-improve-row + .skill-improve-row { margin-top: 16px; }

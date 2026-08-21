@@ -1,0 +1,145 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Executive Dashboard</h1>
+      <div class="page-subtitle">Organization-level workforce, learning, and career analytics</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <form [formGroup]="filterForm" class="filters-grid">
+      <div class="form-field">
+        <label for="edDepartment">Department</label>
+        <select id="edDepartment" formControlName="department">
+          <option value="">All Departments</option>
+          @for (d of departmentOptions; track d) { <option [value]="d">{{ d }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="edRole">Role</label>
+        <select id="edRole" formControlName="role">
+          <option value="">All Roles</option>
+          @for (r of roleOptions; track r) { <option [value]="r">{{ r }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="edLocation">Location</label>
+        <select id="edLocation" formControlName="location">
+          <option value="">All Locations</option>
+          @for (l of locationOptions; track l) { <option [value]="l">{{ l }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="edSkill">Skill</label>
+        <select id="edSkill" formControlName="skill">
+          <option value="">All Skills</option>
+          @for (s of skillOptions; track s) { <option [value]="s">{{ s }}</option> }
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="edTimePeriod">Time Period</label>
+        <select id="edTimePeriod" formControlName="timePeriod">
+          @for (t of timePeriodOptions; track t) { <option [value]="t">{{ t }}</option> }
+        </select>
+      </div>
+      <div class="form-field filter-clear-wrap">
+        <label>&nbsp;</label>
+        <button type="button" class="btn btn-secondary btn-block" (click)="clearFilters()">Clear Filters</button>
+      </div>
+    </form>
+  </div>
+
+  @if (metrics$ | async; as m) {
+    <div class="grid grid-kpi mt-24">
+      <div class="kpi-card">
+        <span class="kpi-label">Workforce</span>
+        <span class="kpi-value">{{ m.employees | number }}</span>
+        <span class="kpi-foot">Employees</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Career Plans</span>
+        <span class="kpi-value">{{ m.careerPlans | number }}</span>
+        <span class="kpi-foot">Active</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Promotions</span>
+        <span class="kpi-value">{{ m.promotions | number }}</span>
+        <span class="kpi-foot">This period</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Skill Coverage</span>
+        <span class="kpi-value">{{ m.skillCoverage }}%</span>
+        <span class="kpi-foot">Selected scope</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Certifications</span>
+        <span class="kpi-value">{{ m.certifications | number }}</span>
+        <span class="kpi-foot">Active</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Courses</span>
+        <span class="kpi-value">{{ m.courses | number }}</span>
+        <span class="kpi-foot">Catalog</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Completion</span>
+        <span class="kpi-value">{{ m.completion }}%</span>
+        <span class="kpi-foot">Course completion rate</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Renewal</span>
+        <span class="kpi-value">{{ m.renewal }}%</span>
+        <span class="kpi-foot">Certification renewal rate</span>
+      </div>
+    </div>
+  }
+
+  <div class="grid grid-2 mt-24">
+    <div class="card">
+      <div class="card-title">Department Skill Coverage</div>
+      @for (d of (deptCoverage$ | async); track d.department) {
+        <div class="progress-row">
+          <span class="progress-label">{{ d.department }}</span>
+          <div class="progress-track"><div class="progress-fill" [style.width.%]="d.coverage"></div></div>
+          <span class="progress-pct">{{ d.coverage }}%</span>
+        </div>
+      } @empty {
+        <p class="text-muted text-sm">No departments match the current filter.</p>
+      }
+    </div>
+
+    <div class="card">
+      <div class="card-title">Top Skill Gaps</div>
+      <div class="chip-list">
+        @for (s of (skillGaps$ | async); track s) { <span class="chip gap">{{ s }}</span> }
+      </div>
+      @if (!(skillGaps$ | async)?.length) {
+        <p class="text-muted text-sm">No skill gaps match the current filter.</p>
+      }
+
+      <div class="card-title mt-24">Promotion Pipeline</div>
+      @if (pipeline$ | async; as pipeline) {
+        @for (stage of pipeline; track stage.label) {
+          <div class="progress-row">
+            <span class="progress-label">{{ stage.label }}</span>
+            <div class="progress-track">
+              <div class="progress-fill" [ngClass]="pipelineClass(stage.label)" [style.width.%]="pipelinePercent(stage.count, totalPipeline(pipeline))"></div>
+            </div>
+            <span class="progress-pct">{{ stage.count | number }}</span>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="card mt-24">
+    <div class="card-title">Training Effectiveness</div>
+    @for (p of (programs$ | async); track p.name) {
+      <div class="progress-row">
+        <span class="progress-label">{{ p.name }}</span>
+        <div class="progress-track"><div class="progress-fill" [style.width.%]="p.effectiveness"></div></div>
+        <span class="progress-pct">{{ p.effectiveness }}%</span>
+      </div>
+    }
+  </div>
+</div>

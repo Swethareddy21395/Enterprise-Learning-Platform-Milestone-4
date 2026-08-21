@@ -1,0 +1,69 @@
+<div class="page">
+  @if (job$ | async; as job) {
+    <div class="page-header">
+      <div>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="goBack()">&larr; Back</button>
+        <h1 class="mt-8">{{ job.title }}</h1>
+        <div class="page-subtitle">{{ job.department }} &middot; {{ job.location }} &middot; Posted {{ job.postedDate }}</div>
+      </div>
+      <span class="badge badge-info" style="font-size:0.9rem; padding:8px 16px;">{{ job.matchPercent }}% Match</span>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Description</div>
+        <p>{{ job.description }}</p>
+
+        <div class="card-title mt-16">Responsibilities</div>
+        <ul class="requirement-list">
+          @for (r of job.responsibilities; track r) { <li>{{ r }}</li> }
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Job Details</div>
+        <div class="detail-grid">
+          <div><span class="text-muted text-sm">Experience</span><div>{{ job.experience }}</div></div>
+          <div><span class="text-muted text-sm">Job Type</span><div>{{ job.jobType }}</div></div>
+          <div><span class="text-muted text-sm">Department</span><div>{{ job.department }}</div></div>
+          <div><span class="text-muted text-sm">Location</span><div>{{ job.location }}</div></div>
+        </div>
+
+        <div class="card-title mt-16">Required Skills</div>
+        <div class="chip-list">
+          @for (s of job.requiredSkills; track s) { <span class="chip">{{ s }}</span> }
+        </div>
+
+        <div class="card-title mt-16">Preferred Skills</div>
+        <div class="chip-list">
+          @for (s of job.preferredSkills; track s) { <span class="chip">{{ s }}</span> }
+        </div>
+
+        @if (job.skillGaps.length) {
+          <div class="card-title mt-16">Your Skill Gaps</div>
+          <div class="chip-list">
+            @for (s of job.skillGaps; track s) { <span class="chip gap">{{ s }}</span> }
+          </div>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn" [ngClass]="jobState.isSaved(job.id) ? 'btn-primary' : 'btn-secondary'" (click)="toggleSave(job.id, job.title)">
+            {{ jobState.isSaved(job.id) ? '🔖 Saved' : '🔖 Save Job' }}
+          </button>
+          @if (jobState.isApplied(job.id)) {
+            <span class="btn" style="background:var(--color-success-bg); color:var(--color-success); pointer-events:none;">✓ Applied</span>
+          } @else {
+            <button type="button" class="btn btn-primary" (click)="apply(job.id, job.title)">Apply</button>
+          }
+          <button type="button" class="btn btn-secondary" (click)="goBack()">Back</button>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="card empty-state">
+      <div class="icon">🚫</div>
+      <div>Job not found. It may have been removed or the link is incorrect.</div>
+      <a class="btn btn-secondary btn-sm mt-16" routerLink="/career/jobs">Back to Internal Jobs</a>
+    </div>
+  }
+</div>

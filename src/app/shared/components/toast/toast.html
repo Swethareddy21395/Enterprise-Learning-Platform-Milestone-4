@@ -1,0 +1,9 @@
+<div class="toast-stack" aria-live="polite">
+  @for (n of (notifications$ | async); track n.id) {
+    <div class="toast" [ngClass]="'toast-' + n.type">
+      <span class="toast-icon">{{ iconFor(n.type) }}</span>
+      <span class="toast-msg">{{ n.message }}</span>
+      <button class="toast-close" (click)="dismiss(n.id)" aria-label="Dismiss">×</button>
+    </div>
+  }
+</div>
