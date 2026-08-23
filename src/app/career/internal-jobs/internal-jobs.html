@@ -74,10 +74,10 @@
             <div class="job-actions mt-16">
               <a class="btn btn-secondary btn-sm" [routerLink]="['/career/jobs', job.id]">View Details</a>
               <button type="button" class="btn btn-sm" [ngClass]="isSaved(job.id) ? 'btn-primary' : 'btn-secondary'" (click)="toggleSave(job.id, job.title)">
-                {{ isSaved(job.id) ? '🔖 Saved' : '🔖 Save Job' }}
+                {{ isSaved(job.id) ? 'Saved' : 'Save Job' }}
               </button>
               @if (isApplied(job.id)) {
-                <span class="btn btn-sm" style="background:var(--color-success-bg); color:var(--color-success); pointer-events:none;">✓ Applied</span>
+                <span class="btn btn-sm" style="background:var(--color-success-bg); color:var(--color-success); pointer-events:none;">Applied</span>
               } @else {
                 <button type="button" class="btn btn-primary btn-sm" (click)="apply(job.id, job.title)">Apply</button>
               }
@@ -87,7 +87,7 @@
       </div>
     } @else {
       <div class="card empty-state">
-        <div class="icon">🔍</div>
+        <div class="icon">Search</div>
         <div>No jobs match your current filters.</div>
         <button type="button" class="btn btn-secondary btn-sm mt-16" (click)="clearFilters()">Clear Filters</button>
       </div>

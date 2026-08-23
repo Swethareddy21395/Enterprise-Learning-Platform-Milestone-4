@@ -16,7 +16,7 @@
         [routerLink]="item.path"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: !!item.exact }">
-        <span class="nav-icon">{{ item.icon }}</span>
+        @if (item.icon) {<span class="nav-icon">{{ item.icon }}</span>}
         <span>{{ item.label }}</span>
       </a>
     }

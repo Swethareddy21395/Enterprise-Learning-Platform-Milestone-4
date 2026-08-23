@@ -132,7 +132,7 @@ export function buildPromotionCriteriaTemplate(targetRole: string): PromotionCri
   }));
 }
 
-// 🚀 यहाँ आपके पोर्ट 8084 के एंडपॉइंट्स को बिना किसी सिंटैक्स एरर के सही तरीके से एक्सपोर्ट कर दिया है!
+// Exported API config for port 8084 endpoints
 export const CAREER_API_CONFIG = {
   baseUrl: 'http://localhost:8084/api/career/plans',
   endpoints: {

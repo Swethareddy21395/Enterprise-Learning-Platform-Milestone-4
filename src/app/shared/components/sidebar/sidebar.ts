@@ -18,12 +18,12 @@ interface NavItem {
 })
 export class SidebarComponent {
   readonly navItems: NavItem[] = [
-    { label: 'Career Overview', path: '/career', icon: '🧭', exact: true },
-    { label: 'Career Roadmaps', path: '/career/roadmaps', icon: '🛤️' },
-    { label: 'Promotion Criteria', path: '/career/promotion-criteria', icon: '🏆' },
-    { label: 'Internal Jobs', path: '/career/jobs', icon: '💼' },
-    { label: 'Saved Jobs', path: '/career/saved-jobs', icon: '🔖' },
-    { label: 'Training Analytics', path: '/career/training-analytics', icon: '📊' },
-    { label: 'Executive Dashboard', path: '/career/executive-dashboard', icon: '📈' }
+    { label: 'Career Overview', path: '/career', icon: '', exact: true },
+    { label: 'Career Roadmaps', path: '/career/roadmaps', icon: '' },
+    { label: 'Promotion Criteria', path: '/career/promotion-criteria', icon: '' },
+    { label: 'Internal Jobs', path: '/career/jobs', icon: '' },
+    { label: 'Saved Jobs', path: '/career/saved-jobs', icon: '' },
+    { label: 'Training Analytics', path: '/career/training-analytics', icon: '' },
+    { label: 'Executive Dashboard', path: '/career/executive-dashboard', icon: '' }
   ];
 }

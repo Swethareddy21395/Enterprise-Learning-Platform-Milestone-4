@@ -48,10 +48,10 @@
 
         <div class="form-actions">
           <button type="button" class="btn" [ngClass]="jobState.isSaved(job.id) ? 'btn-primary' : 'btn-secondary'" (click)="toggleSave(job.id, job.title)">
-            {{ jobState.isSaved(job.id) ? '🔖 Saved' : '🔖 Save Job' }}
+            {{ jobState.isSaved(job.id) ? 'Saved' : 'Save Job' }}
           </button>
           @if (jobState.isApplied(job.id)) {
-            <span class="btn" style="background:var(--color-success-bg); color:var(--color-success); pointer-events:none;">✓ Applied</span>
+            <span class="btn" style="background:var(--color-success-bg); color:var(--color-success); pointer-events:none;">Applied</span>
           } @else {
             <button type="button" class="btn btn-primary" (click)="apply(job.id, job.title)">Apply</button>
           }
@@ -61,7 +61,7 @@
     </div>
   } @else {
     <div class="card empty-state">
-      <div class="icon">🚫</div>
+      <div class="icon">Not Found</div>
       <div>Job not found. It may have been removed or the link is incorrect.</div>
       <a class="btn btn-secondary btn-sm mt-16" routerLink="/career/jobs">Back to Internal Jobs</a>
     </div>

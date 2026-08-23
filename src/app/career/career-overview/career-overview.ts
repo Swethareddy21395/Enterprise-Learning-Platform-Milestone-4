@@ -75,7 +75,7 @@ export class CareerOverviewComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data: any) => {
           this.careerData = data;
-          console.log("Database Connected Live! 🎉", data);
+          console.log("Database Connected Live!", data);
 
           // अगर आप चाहें तो फॉर्म में सीधे डेटाबेस की वैल्यूज पैच कर सकते हैं:
           if (data) {
@@ -129,7 +129,7 @@ export class CareerOverviewComponent implements OnInit, OnDestroy {
     this.http.post(CAREER_API_CONFIG.baseUrl, body)
       .subscribe({
         next: (res: any) => {
-          console.log('Saved to backend database successfully! 🎉', res);
+          console.log('Saved to backend database successfully!', res);
           this.careerData = res;
         },
         error: (err) => {
