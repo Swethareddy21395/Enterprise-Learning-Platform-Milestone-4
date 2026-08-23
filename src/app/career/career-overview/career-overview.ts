@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http'; // 1. इसे इम्पोर्ट करना जरूरी था
 import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { CareerStateService } from '../../core/services/career-state.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { JobStateService } from '../../core/services/job-state.service';
-import { ROLE_LADDER } from '../../core/services/career-data';
+import { ROLE_LADDER, CAREER_API_CONFIG } from '../../core/services/career-data';
 
 function roleLadderValidator(): ValidatorFn {
   return (control): ValidationErrors | null => {
@@ -37,6 +38,7 @@ export class CareerOverviewComponent implements OnInit, OnDestroy {
   private careerState = inject(CareerStateService);
   private jobState = inject(JobStateService);
   private notifications = inject(NotificationService);
+  private http = inject(HttpClient); // 2. HttpClient को यहाँ इंजेक्ट कर दिया है
 
   readonly roleLadder = ROLE_LADDER;
   private readonly destroy$ = new Subject<void>();
@@ -47,6 +49,9 @@ export class CareerOverviewComponent implements OnInit, OnDestroy {
   jobMatchCount$ = this.jobState.allJobs$.pipe(
     map((jobs) => jobs.filter((j) => j.matchPercent >= 50).length)
   );
+
+  // 3. डेटाबेस की लाइव वैल्यू होल्ड करने के लिए वेरिएबल डिक्लेअर कर दिया है
+  careerData: any = null;
 
   readonly kpis = {
     careerPlans: '2,847',
@@ -65,8 +70,30 @@ export class CareerOverviewComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    this.http.get(CAREER_API_CONFIG.endpoints.roadmap('EMP101'))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: any) => {
+          this.careerData = data;
+          console.log("Database Connected Live! 🎉", data);
+
+          // अगर आप चाहें तो फॉर्म में सीधे डेटाबेस की वैल्यूज पैच कर सकते हैं:
+          if (data) {
+            this.form.patchValue({
+              currentRole: data.currentRole,
+              targetRole: data.targetRole,
+              mentor: data.mentor,
+              notes: data.status
+            }, { emitEvent: false });
+          }
+        },
+        error: (err) => {
+          console.error("Backend Connection Warning:", err);
+        }
+      });
+
     this.careerPlan$.pipe(takeUntil(this.destroy$)).subscribe((plan) => {
-      if (this.form.pristine) {
+      if (this.form.pristine && !this.careerData) {
         this.form.patchValue(plan, { emitEvent: false });
       }
     });
@@ -87,7 +114,29 @@ export class CareerOverviewComponent implements OnInit, OnDestroy {
       this.notifications.error('Please fix the highlighted fields before saving.');
       return;
     }
-    this.careerState.updateCareerPlan(this.form.getRawValue() as any);
+    const rawValue = this.form.getRawValue();
+    this.careerState.updateCareerPlan(rawValue as any);
+
+    const body = {
+      employeeId: 'EMP101',
+      currentRole: rawValue.currentRole,
+      targetRole: rawValue.targetRole,
+      mentor: rawValue.mentor,
+      progress: this.careerData?.progress || 67,
+      status: rawValue.notes || 'IN_PROGRESS'
+    };
+
+    this.http.post(CAREER_API_CONFIG.baseUrl, body)
+      .subscribe({
+        next: (res: any) => {
+          console.log('Saved to backend database successfully! 🎉', res);
+          this.careerData = res;
+        },
+        error: (err) => {
+          console.error('Error saving to backend:', err);
+        }
+      });
+
     this.form.markAsPristine();
     this.notifications.success('Career plan updated successfully.');
   }

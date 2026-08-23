@@ -4,10 +4,6 @@ import { JobStateService } from './job-state.service';
 import { ExecutiveDashboardService } from './executive-dashboard.service';
 import { NotificationService } from './notification.service';
 
-/**
- * Coordinates a full "Reset Demo Data" across every Milestone 4 domain
- * service so the app returns to its original spec values.
- */
 @Injectable({ providedIn: 'root' })
 export class AppResetService {
   constructor(

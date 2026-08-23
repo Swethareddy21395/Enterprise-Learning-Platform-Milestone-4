@@ -5,7 +5,7 @@ import { CareerPlan, PromotionCriterion, RoadmapStage } from '../models/career.m
 export const ROLE_LADDER = ['Developer', 'Senior Developer', 'Tech Lead', 'Engineering Manager'];
 
 export const DEFAULT_CAREER_PLAN: CareerPlan = {
-  employeeId: 'EMP-1001',
+  employeeId: 'EMP101',
   employeeName: 'John Smith',
   currentRole: 'Developer',
   targetRole: 'Tech Lead',
@@ -124,7 +124,6 @@ export function buildRoadmap(currentRole: string, targetRole: string): RoadmapSt
 export function buildPromotionCriteriaTemplate(targetRole: string): PromotionCriterion[] {
   const detail = STAGE_DETAILS[targetRole];
   const names = detail ? detail.promotionRequirements : [];
-  // A sensible demo default: first 60% of listed criteria start completed.
   const splitAt = Math.ceil(names.length * 0.6);
   return names.map((name, idx) => ({
     id: `${targetRole}::${name}`.replace(/\s+/g, '-').toLowerCase(),
@@ -132,3 +131,12 @@ export function buildPromotionCriteriaTemplate(targetRole: string): PromotionCri
     completed: idx < splitAt
   }));
 }
+
+// 🚀 यहाँ आपके पोर्ट 8084 के एंडपॉइंट्स को बिना किसी सिंटैक्स एरर के सही तरीके से एक्सपोर्ट कर दिया है!
+export const CAREER_API_CONFIG = {
+  baseUrl: 'http://localhost:8084/api/career/plans',
+  endpoints: {
+    roadmap: (employeeId: string) => `http://localhost:8084/api/career/plans/employee/${employeeId}/roadmap`,
+    recommendations: (employeeId: string) => `http://localhost:8084/api/career/plans/employee/${employeeId}/recommendations`
+  }
+};
